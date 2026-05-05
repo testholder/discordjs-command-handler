@@ -6,21 +6,10 @@ module.exports = {
         {
             commandName: "ping",
             description: "",
-            aliases: [""],
+            aliases: ["test"],
             requiredArgs: 0,
             permissions: ['ManageMessages'],
             async execute(client, context, args) {
-                context.reply({ content: "pong?" });
-            }
-        },
-        {
-            commandName: "purgetest",
-            description: "",
-            aliases: [""],
-            requiredArgs: 0,
-            permissions: ['ManageMessages'],
-            async execute(client, context, args) {
-                console.log(args[0])
                 context.reply({ content: "pong?" });
             }
         }

@@ -109,10 +109,6 @@ client.on(Events.MessageCreate, async (message) => {
     
     // remove first index of array which is command
     const commandName = args.shift().toLowerCase();
-    
-
-    console.log(args);
-    console.log(commandName);
 
     let command = client.commands.get(commandName);
     if (!command) return;
