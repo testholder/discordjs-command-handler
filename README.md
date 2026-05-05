@@ -10,7 +10,7 @@ A simple command handler for a Discord bot built using the Discord.js library.
 
 ### 1. Clone the repository
 ```bash
-git clone https://github.com/testholder/discordJsCmdHandler.git
+git clone https://github.com/testholder/discordjs-command-handler.git
 ```
 
 ### 2. Go to the project directory
@@ -27,8 +27,8 @@ npm install
 Rename `.env.example` to `.env` and replace the placeholder with your bot token:
 
 ```env
-PORT=3000
 BOT_TOKEN=YOUR_BOT_TOKEN_HERE
+DEFAULT_PREFIX=DEFAULT_PREFIX_HERE
 ```
 
 ### 5. Run the bot
