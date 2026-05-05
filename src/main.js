@@ -126,24 +126,60 @@ async function handleCommand(command, message, args) {
         channel: message.channel,
         reply: async (options = {}) => {
             const replyOptions = {
-                content: typeof options.content === 'string' ? options.content : options.content,
-                embeds: Array.isArray(options.content) ? options.content : options.embeds || [],
-                ephemeral: options.ephemeral,
+                content: options.content,
+                embeds: options.embeds || [],
+                components: options.components || [],
+                ephemeral: options.ephemeral ?? false,
             };
-            
-            if (options.components) {
-                replyOptions.components = options.components;
+
+            if (!replyOptions.content && !replyOptions.embeds.length) {
+                throw new Error("no content found");
             }
 
-            if (!replyOptions.content && !replyOptions.embeds?.length) throw new Error("no content found");
-            if (message.isCommand?.() || message.isContextMenu?.()) {
-                if (options.deferReply && !message.deferred) return await message.deferReply({ ephemeral: options.ephemeral });
-                if (message.deferred) return await message.followUp(replyOptions);
-                else return await message.reply(replyOptions);
-            } else {
-                return await message.reply(replyOptions);
+            if (context.isCommand?.() || context.isContextMenu?.() || context.isButton?.()) {
+
+                if (options.defer && !context.deferred && !context.replied) {
+                    await context.deferReply({ ephemeral: replyOptions.ephemeral });
+                    return;
+                }
+
+                if (context.deferred && !context.replied) {
+                    return await context.editReply(replyOptions);
+                }
+
+                if (context.replied) {
+                    return await context.followUp(replyOptions);
+                }
+
+                return await context.reply(replyOptions);
+            }
+
+            return await context.reply(replyOptions);
+        },
+        defer: async (ephemeral = false) => {
+            if (context.isRepliable?.() && !context.deferred && !context.replied) {
+                return await context.deferReply({ ephemeral });
             }
         },
+        followUp: async (options = {}) => {
+            const followUpOptions = {
+                content: options.content,
+                embeds: options.embeds || [],
+                components: options.components || [],
+                ephemeral: options.ephemeral ?? false,
+            };
+
+            if (context.followUp) {
+                return await context.followUp(followUpOptions);
+            }
+
+            return await context.reply(followUpOptions);
+        },
+        collector: (target, options = {}) => {
+            if (!target) throw new Error("Collector target required");
+
+            return target.createMessageComponentCollector(options);
+        }
     }, args);
 };
 
