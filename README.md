@@ -45,10 +45,4 @@ DEFAULT_PREFIX=DEFAULT_PREFIX_HERE
 ```bash
 npm start
 ```
-
----
-For development (auto-restarts on changes):
-```bash
-npm run dev
-```
 ---
