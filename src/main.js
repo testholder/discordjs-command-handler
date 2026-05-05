@@ -1,3 +1,4 @@
+// main.js
 const { Client, Events, GatewayIntentBits, Collection, PermissionsBitField} = require("discord.js");
 const path = require('path');
 const fs = require('fs');
@@ -20,6 +21,7 @@ const client = new Client({
 });
 
 client.commands = new Collection();
+client.events = new Collection();
 
 // help functions
 async function reloadCommands() {
@@ -30,10 +32,35 @@ async function reloadCommands() {
     });
 
     client.commands.clear();
+    client.events.clear();
 
     await loadCommands();
 
     return true;
+}
+
+function registerEvents() {
+    for (const [eventName, handlers] of client.events) {
+        const existing = client.listeners(eventName);
+
+        for (const listener of existing) {
+            if (listener.isCogEvent) {
+                client.removeListener(eventName, listener);
+            }
+        }
+        const wrapper = async (...args) => {
+            for (const handler of handlers) {
+                try {
+                    await handler.execute(client, ...args);
+                } catch (err) {
+                    console.error(`Error in event ${eventName}:`, err);
+                }
+            }
+        };
+        wrapper.isCogEvent = true;
+
+        client.on(eventName, wrapper);
+    }
 }
 
 async function loadCommands() {
@@ -58,9 +85,20 @@ async function loadCommands() {
                 console.log(`   Command name: ${command.commandName}`);
             }
         }
+        for (const event of cog.events || []) {
+            if (!client.events.has(event.eventName)) {
+                client.events.set(event.eventName, []);
+            }
+
+            client.events.get(event.eventName).push(event);
+
+            console.log(`   Event loaded: ${event.eventName}`);
+        }
     }
+
+    registerEvents();
     
-    console.log("commands loaded");
+    console.log("commands loaded + events");
 };
 
 async function handleCommand(command, message, args) {
@@ -136,7 +174,7 @@ client.on(Events.MessageCreate, async (message) => {
     
     try{ 
         // handle command
-        handleCommand(command, message, args);
+        await handleCommand(command, message, args);
     } catch (error) {
         console.error("error executing command: ", error);
     }

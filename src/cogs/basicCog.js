@@ -1,4 +1,4 @@
-// Todo
+// basicCog.js
 
 module.exports = {
     cogName: "basicCog",
@@ -13,5 +13,14 @@ module.exports = {
                 context.reply({ content: "pong?" });
             }
         }
+    ],
+    events: [
+        {
+            eventName: "messageCreate",
+            async execute(client, message) {
+                if (message.author.bot) return;
+                console.log("Message:", message.content);
+            }
+        },
     ]
-}
+};

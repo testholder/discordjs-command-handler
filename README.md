@@ -6,6 +6,12 @@ A simple command handler for a Discord bot built using the Discord.js library.
 - A Discord account
 - A Discord bot token (from the Discord Developer Portal)
 
+## Features
+- Cog-based command & event system
+- Prefix commands with aliases
+- Permission support
+- Reload cogs command (commands + events)
+
 ## Todo
 - Reload cogs command ✅
 - Add hybrid commands (text & slash)
