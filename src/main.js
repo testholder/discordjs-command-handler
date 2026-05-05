@@ -21,14 +21,26 @@ const client = new Client({
 
 client.commands = new Collection();
 
-
 // help functions
+async function reloadCommands() {
+    Object.keys(require.cache).forEach(file => {
+        if (file.includes(path.join(__dirname, "cogs"))) {
+            delete require.cache[file];
+        }
+    });
+
+    client.commands.clear();
+
+    await loadCommands();
+
+    return true;
+}
+
 async function loadCommands() {
     const cogsPath = path.join(__dirname, "cogs");
     const cogFiles = fs.readdirSync(cogsPath).filter(file => file.endsWith(".js"));
     
     client.commands.clear();
-    client.commands = new Collection();
 
     for (const file of cogFiles) {
         const cog = require(`./cogs/${file}`);
@@ -95,8 +107,6 @@ async function handleCommand(command, message, args) {
             }
         },
     }, args);
-
-    
 };
 
 // bot events
@@ -109,9 +119,20 @@ client.on(Events.MessageCreate, async (message) => {
     
     // remove first index of array which is command
     const commandName = args.shift().toLowerCase();
+    
+    // TODO: maybe make it so only admin or a set userID can access the command
+    if (commandName === "reload") {
+        return reloadCommands()
+            .then(() => message.reply("Successfully reloaded cogs!"))
+            .catch((error) => {
+                message.reply("Failed to reload.");
+                console.log(error);
+            });
+    }
 
     let command = client.commands.get(commandName);
     if (!command) return;
+    
     
     try{ 
         // handle command

@@ -7,7 +7,7 @@ A simple command handler for a Discord bot built using the Discord.js library.
 - A Discord bot token (from the Discord Developer Portal)
 
 ## Todo
-- Reload cogs command
+- Reload cogs command ✅
 - Add hybrid commands (text & slash)
 
 ## Getting Started
